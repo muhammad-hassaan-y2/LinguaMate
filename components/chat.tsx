@@ -3,7 +3,7 @@
 import type { Attachment, Message } from 'ai';
 import { useChat } from 'ai/react';
 import { AnimatePresence } from 'framer-motion';
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import useSWR, { useSWRConfig } from 'swr';
 import { useWindowSize } from 'usehooks-ts';
 
@@ -28,6 +28,7 @@ export function Chat({
   selectedModelId: string;
 }) {
   const { mutate } = useSWRConfig();
+  const [streamedMessage, setStreamedMessage] = useState<Message | null>(null);
 
   const {
     messages,
@@ -39,12 +40,22 @@ export function Chat({
     isLoading,
     stop,
     data: streamingData,
-  } = useChat({
-    body: { id, modelId: selectedModelId },
-    initialMessages,
-    onFinish: () => {
-      mutate('/api/history');
+  } = useChat<Message>({
+    api: '/api/chat',
+    id,
+    body: { 
+      id, 
+      modelId: selectedModelId 
     },
+    initialMessages,
+    onError: (error) => {
+      console.error('Chat error:', error);
+    },
+    onFinish: (message) => {
+      mutate('/api/history');
+      setStreamedMessage(null);
+      setMessages((prevMessages) => [...prevMessages, message]);
+    }
   });
 
   const { width: windowWidth = 1920, height: windowHeight = 1080 } =
@@ -74,6 +85,14 @@ export function Chat({
 
   const [attachments, setAttachments] = useState<Array<Attachment>>([]);
 
+  useEffect(() => {
+    if (streamingData && typeof streamingData === 'object' && 'content' in streamingData) {
+      setStreamedMessage(streamingData as unknown as Message);
+    }
+  }, [streamingData]);
+
+  const displayMessages = [...messages, ...(streamedMessage ? [streamedMessage] : [])];
+
   return (
     <>
       <div className="flex flex-col min-w-0 h-dvh bg-background">
@@ -82,36 +101,35 @@ export function Chat({
           ref={messagesContainerRef}
           className="flex flex-col min-w-0 gap-6 flex-1 overflow-y-scroll pt-4"
         >
-          {messages.length === 0 && <Overview />}
+          {displayMessages.length === 0 && <Overview />}
 
-          {messages.map((message, index) => (
+          {displayMessages.map((message) => (
             <PreviewMessage
               key={message.id}
               chatId={id}
               message={message}
               block={block}
               setBlock={setBlock}
-              isLoading={isLoading && messages.length - 1 === index}
-              vote={
-                votes
-                  ? votes.find((vote) => vote.messageId === message.id)
-                  : undefined
-              }
+              isLoading={isLoading && message.id === displayMessages[displayMessages.length - 1]?.id}
+              vote={votes?.find((vote) => vote.messageId === message.id)}
             />
           ))}
 
-          {isLoading &&
-            messages.length > 0 &&
-            messages[messages.length - 1].role === 'user' && (
-              <ThinkingMessage />
-            )}
+          {isLoading && displayMessages.length > 0 && displayMessages[displayMessages.length - 1].role === 'user' && (
+            <ThinkingMessage />
+          )}
 
-          <div
-            ref={messagesEndRef}
-            className="shrink-0 min-w-[24px] min-h-[24px]"
-          />
+          <div ref={messagesEndRef} className="shrink-0 min-w-[24px] min-h-[24px]" />
         </div>
-        <form className="flex mx-auto px-4 bg-background pb-4 md:pb-6 gap-2 w-full md:max-w-3xl">
+
+        <form 
+          className="flex mx-auto px-4 bg-background pb-4 md:pb-6 gap-2 w-full md:max-w-3xl"
+          onSubmit={(e) => {
+            e.preventDefault();
+            if (!input.trim()) return;
+            handleSubmit(e);
+          }}
+        >
           <MultimodalInput
             chatId={id}
             input={input}
@@ -153,3 +171,4 @@ export function Chat({
     </>
   );
 }
+

@@ -41,6 +41,7 @@ const suggestedActions = [
   },
 ];
 
+
 export function MultimodalInput({
   chatId,
   input,
