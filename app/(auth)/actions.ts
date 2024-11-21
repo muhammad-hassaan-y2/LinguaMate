@@ -75,6 +75,7 @@ export const register = async (
 
     return { status: 'success' };
   } catch (error) {
+    
     if (error instanceof z.ZodError) {
       return { status: 'invalid_data' };
     }
