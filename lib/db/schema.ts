@@ -15,6 +15,7 @@ export const user = pgTable('User', {
   id: uuid('id').primaryKey().notNull().defaultRandom(),
   email: varchar('email', { length: 64 }).notNull(),
   password: varchar('password', { length: 64 }),
+  isVerified: boolean('isVerified').default(false),
 });
 
 export type User = InferSelectModel<typeof user>;
@@ -107,3 +108,22 @@ export const suggestion = pgTable(
 );
 
 export type Suggestion = InferSelectModel<typeof suggestion>;
+
+
+export const verifyEmail = pgTable(
+  'VerifyEmail',
+  {
+    id: uuid('id').notNull().defaultRandom(),
+    createdAt: timestamp('createdAt').notNull(),
+    otp:text('otp').notNull(),
+    userId: uuid('userId')
+      .notNull()
+      .references(() => user.id),
+  },
+  (table) => {
+    return {
+      pk: primaryKey({ columns: [table.id, table.createdAt] }),
+    };
+  },
+);
+export type VerifyEmail = InferSelectModel<typeof verifyEmail>;

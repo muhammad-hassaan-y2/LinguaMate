@@ -15,7 +15,10 @@ import {
   type Message,
   message,
   vote,
+  verifyEmail
 } from './schema';
+import { generateUUID } from '../utils';
+import { error } from 'console';
 
 // Optionally, if not using email/pass login, you can
 // use the Drizzle adapter for Auth.js / NextAuth
@@ -39,7 +42,7 @@ export async function createUser(email: string, password: string) {
   const hash = hashSync(password, salt);
 
   try {
-    return await db.insert(user).values({ email, password: hash });
+    return await db.insert(user).values({ email, password: hash, isVerified:false });
   } catch (error) {
     console.error('Failed to create user in database');
     throw error;
@@ -278,4 +281,59 @@ export async function getSuggestionsByDocumentId({
     );
     throw error;
   }
+}
+
+export async function createVerification({
+  id,
+  email,
+}: {
+  id: string;
+  email:string;
+}) {
+  try {
+    const token = generateUUID().slice(0, 6).toUpperCase()
+    
+    return await db.insert(verifyEmail).values({
+      userId:id,
+      createdAt: new Date(),
+      otp:token,
+    })
+  } catch (error) {
+    return {error: "user not found"}
+  }
+}
+
+export async function verifyOTP({
+  otp,
+}: {
+  otp: string;
+}) {
+  try {
+    const isOTP = await db.select().from(verifyEmail).where(eq(verifyEmail.otp , otp))
+    if(!isOTP) return {error: "not valid"}
+    const isExpired = new Date(isOTP[0].createdAt).getTime() - new Date().getTime() > 60*60*1000
+    if(isExpired) return { error:"token Expired"}
+    return {data:isOTP[0]}
+  } catch (error) {
+    return {error: "OTP not found"}
+  }
+}
+
+export async function verifyUser(
+  {
+    id,
+  }: {
+    id: string;
+  }
+) {
+    try {
+        return await  db
+        .update(user)
+        .set({
+          isVerified: true,
+        })
+        .where(eq(user.id,id));
+    } catch (error) {
+      return {error: "User not verified"}
+    }
 }
