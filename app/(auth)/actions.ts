@@ -182,3 +182,45 @@ export const verifyOtp = async (
     return { status: 'failed' };
   }
 }
+
+
+export interface ChangePasswordActionState {
+  status:
+    | 'idle'
+    | 'in_progress'
+    | 'success'
+    | 'failed'
+    | 'not_valid'
+    | 'invalid_data';
+  data?:  {
+    otp: string;
+    id: string;
+    createdAt: Date;
+    userId: string;
+},
+}
+export const changePassword = async (
+  _: ChangePasswordActionState,
+  formData: FormData,
+): Promise<ChangePasswordActionState> => {
+  
+  try {
+    const validatedData = otpFormSchema.parse({
+      otp: formData.get('otp'),
+    });
+    const {data, error}= await verifyOTP({otp:validatedData.otp})
+    
+    if (error) {
+      return { status: 'not_valid' } as OTPPasswordActionState;
+    }
+    
+    return { status: 'success', data:  data};
+  } catch (error) {
+    
+    if (error instanceof z.ZodError) {
+      return { status: 'invalid_data' };
+    }
+
+    return { status: 'failed' };
+  }
+}
