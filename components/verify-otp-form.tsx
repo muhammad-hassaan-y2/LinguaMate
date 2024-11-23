@@ -29,8 +29,46 @@ export function VerifyOTPForm({
           name="otp"
           className="bg-muted text-md md:text-sm"
           type="text"
-          placeholder="XXXXXX"
+          placeholder=""
           autoComplete="otp"
+          required
+          autoFocus
+        />
+      </div>
+      <div className="flex flex-col gap-2">
+        <Label
+          htmlFor="password"
+          className="text-zinc-600 font-normal dark:text-zinc-400"
+        >
+          New Password
+        </Label>
+
+        <Input
+          id="password"
+          name="password"
+          className="bg-muted text-md md:text-sm"
+          type="password"
+          placeholder="*******"
+          autoComplete="password"
+          required
+          autoFocus
+        />
+      </div>
+      <div className="flex flex-col gap-2">
+        <Label
+          htmlFor="password2"
+          className="text-zinc-600 font-normal dark:text-zinc-400"
+        >
+          Confirm Password
+        </Label>
+
+        <Input
+          id="password2"
+          name="password2"
+          className="bg-muted text-md md:text-sm"
+          type="password"
+          placeholder="******"
+          autoComplete="password2"
           required
           autoFocus
         />
