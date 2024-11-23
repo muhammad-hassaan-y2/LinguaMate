@@ -40,7 +40,7 @@ export function Chat({
     isLoading,
     stop,
     data: streamingData,
-  } = useChat<Message>({
+  } = useChat({
     api: '/api/chat',
     id,
     body: { 
