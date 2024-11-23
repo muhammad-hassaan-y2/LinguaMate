@@ -30,9 +30,9 @@ import { Textarea } from './ui/textarea';
 
 const suggestedActions = [
   {
-    title: 'What is the weather',
-    label: 'in San Francisco?',
-    action: 'What is the weather in San Francisco?',
+    title: 'What are some Famous Slangs in English?',
+    label: 'English SL=langs?',
+    action: 'Give me some famous ENlgish Slangs?',
   },
   {
     title: 'Help me draft an essay',

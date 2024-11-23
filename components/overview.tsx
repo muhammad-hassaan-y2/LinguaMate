@@ -27,7 +27,7 @@ export const Overview = () => {
           in speaking.
         </p>
         <p>
-          Whether you're learning a new language or polishing your skills,{' '}
+          Whether you&apos;re learning a new language or polishing your skills,{' '}
           <span className="font-medium">LinguaMate</span> provides tailored
           exercises and real-time guidance. Learn with interactive activities,
           personalized feedback, and a seamless learning experience.
