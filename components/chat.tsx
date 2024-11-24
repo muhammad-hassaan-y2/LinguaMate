@@ -145,6 +145,7 @@ export function Chat({
             append={append}
           />
         </form>
+        <p className=' inline-block mx-auto text-sm mt-6 mb-4'>Lingua mate can make mistakes, so double-check it</p>
       </div>
 
       <AnimatePresence>

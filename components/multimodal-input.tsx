@@ -21,7 +21,7 @@ import {
 import { toast } from 'sonner';
 import { useLocalStorage, useWindowSize } from 'usehooks-ts';
 
-import { sanitizeUIMessages } from '@/lib/utils';
+import { cn, sanitizeUIMessages } from '@/lib/utils';
 
 import { ArrowUpIcon, PaperclipIcon, StopIcon, } from './icons';
 import { PreviewAttachment } from './preview-attachment';
@@ -32,14 +32,20 @@ import { VoiceRecorder } from './voice-recorder';
 
 const suggestedActions = [
   {
-    title: 'What are some Famous Slangs in English?',
-    label: 'English SL=langs?',
-    action: 'Give me some famous ENlgish Slangs?',
+    title: 'Help me practice speaking',
+    label: '#FBE055',
+    action: 'Help me practice speaking',
   },
   {
-    title: 'Help me draft an essay',
-    label: 'about Silicon Valley',
-    action: 'Help me draft a short essay about Silicon Valley',
+    title: 'Help me transcribe',
+    label: '#AAF2D1',
+    action: 'Help me transcribe',
+  },
+
+  {
+    title: 'Make me a quiz',
+    label: '#CACAFF',
+    action: 'Make me a quiz',
   },
 ];
 
@@ -204,7 +210,7 @@ export function MultimodalInput({
       {messages.length === 0 &&
         attachments.length === 0 &&
         uploadQueue.length === 0 && (
-          <div className="grid sm:grid-cols-2 gap-2 w-full">
+          <div className="flex gap-2 w-full">
             {suggestedActions.map((suggestedAction, index) => (
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
@@ -224,12 +230,10 @@ export function MultimodalInput({
                       content: suggestedAction.action,
                     });
                   }}
-                  className="text-left border rounded-xl px-4 py-3.5 text-sm flex-1 gap-1 sm:flex-col w-full h-auto justify-start items-start"
+                  style={{background:`${suggestedAction.label}`}}
+                  className={cn(` bg-[${suggestedAction.label}] text-left  border rounded-full px-4 py-2 text-sm  gap-1 sm:flex-col inline-block h-auto justify-start items-start `)}
                 >
-                  <span className="font-medium">{suggestedAction.title}</span>
-                  <span className="text-muted-foreground">
-                    {suggestedAction.label}
-                  </span>
+                  <span className="font-medium ">{suggestedAction.title}</span>
                 </Button>
               </motion.div>
             ))}
@@ -267,11 +271,11 @@ export function MultimodalInput({
 
       <Textarea
         ref={textareaRef}
-        placeholder="Send a message..."
+        placeholder="Ask LinguaMate"
         value={input}
         onChange={handleInput}
         className={cx(
-          'min-h-[24px] max-h-[calc(75dvh)] overflow-hidden resize-none rounded-xl text-base bg-muted',
+          'min-h-[24px] max-h-[calc(75dvh)] overflow-hidden resize-none px-6 pt-3 rounded-3xl text-base bg-muted',
           className,
         )}
         rows={3}
@@ -313,8 +317,8 @@ export function MultimodalInput({
         </Button>
       )}
 
-      {/* <Button
-        className="rounded-full p-1.5 h-fit absolute bottom-2 right-11 m-0.5 dark:border-zinc-700"
+      <Button
+        className="rounded-full p-1.5 h-fit absolute -translate-x-8 bottom-2 right-11 m-0.5 dark:border-zinc-700"
         onClick={(event) => {
           event.preventDefault();
           fileInputRef.current?.click();
@@ -323,8 +327,9 @@ export function MultimodalInput({
         disabled={isLoading}
       >
         <PaperclipIcon size={14} />
-      </Button> */}
+      </Button>
       <VoiceRecorder />
+      
     </div>
   );
 }
