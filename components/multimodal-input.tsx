@@ -31,7 +31,7 @@ import { Textarea } from './ui/textarea';
 const suggestedActions = [
   {
     title: 'What are some Famous Slangs in English?',
-    label: 'English SL=langs?',
+    label: 'English Slangs?',
     action: 'Give me some famous ENlgish Slangs?',
   },
   {
