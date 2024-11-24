@@ -2,6 +2,7 @@
 
 LinguaMate is an interactive language learning platform designed to help users master new languages through personalized learning paths, interactive lessons, and real-time conversations.
 
+
 ## Features
 
 ### Core Functionality
