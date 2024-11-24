@@ -2,6 +2,7 @@
 
 LinguaMate is an interactive language learning platform designed to help users master new languages through personalized learning paths, interactive lessons, and real-time conversations.
 
+
 ## Features
 
 ### Core Functionality
@@ -134,7 +135,7 @@ For support, please open an issue in the GitHub repository or contact us at (you
 
 ## Roadmap
 
-- [ ] Add voice recognition features
+- [ ] Add voice recognition features 
 - [ ] Implement AI-powered conversation practice
 - [ ] Add gamification elements
 - [ ] Integrate with language learning APIs

@@ -97,7 +97,7 @@ export default function FeaturesPage() {
           Unlock Your Language Learning Potential
         </h1>
         <p className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-          Discover why millions choose LinguaMate to achieve their language learning goals
+          Discover why millions choose AkashChat to achieve their language learning goals
         </p>
       </div>
 

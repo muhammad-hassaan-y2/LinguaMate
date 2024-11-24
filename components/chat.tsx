@@ -41,7 +41,7 @@ export function Chat({
     stop,
     data: streamingData,
   } = useChat({
-    api: '/api/chat',
+    api: '', ///api/chat
     id,
     body: { 
       id, 
@@ -52,7 +52,7 @@ export function Chat({
       console.error('Chat error:', error);
     },
     onFinish: (message) => {
-      mutate('/api/history');
+      mutate(''); ///api/history
       setStreamedMessage(null);
       setMessages((prevMessages) => [...prevMessages, message]);
     }
@@ -75,8 +75,9 @@ export function Chat({
     },
   });
 
+  // /api/vote?chatId=${id}
   const { data: votes } = useSWR<Array<Vote>>(
-    `/api/vote?chatId=${id}`,
+    ``,
     fetcher,
   );
 
@@ -144,6 +145,7 @@ export function Chat({
             append={append}
           />
         </form>
+        <p className=' inline-block mx-auto text-sm mt-6 mb-4'>Lingua mate can make mistakes, so double-check it</p>
       </div>
 
       <AnimatePresence>

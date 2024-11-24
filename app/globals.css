@@ -98,10 +98,20 @@
   * {
     @apply border-border;
   }
-
+/* added few lines of css to change background to match deisgn */
   body {
     @apply bg-background text-foreground;
+    background: url("/images/Background.png") !important;
+    background-size: cover !important;
   }
+
+  .bg-background {
+    background: transparent !important;
+  }
+/* change text-area */
+textarea{
+  height: 48px !important;
+}
 
   @font-face {
     font-family: "geist";
