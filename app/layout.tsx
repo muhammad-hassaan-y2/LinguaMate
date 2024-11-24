@@ -7,8 +7,8 @@ import './globals.css';
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://chat.vercel.ai'),
-  title: 'AkashChat',
-  description: 'Akash Akashathon',
+  title: 'LinguaMate',
+  description: 'LinguaMate lingua',
 };
 
 export const viewport = {
