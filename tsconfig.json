@@ -28,6 +28,8 @@
     "**/*.tsx",
     ".next/types/**/*.ts",
     "next.config.js"
-, "app/(chat)/layout"  ],
+, "app/(chat)/layout",
+"global.d.ts"  ],
+
   "exclude": ["node_modules"]
 }
