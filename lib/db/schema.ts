@@ -24,7 +24,6 @@ export const chat = pgTable('Chat', {
   createdAt: timestamp('createdAt').notNull(),
   title: text('title').notNull(),
   userId: uuid('userId')
-    .notNull()
     .references(() => user.id),
 });
 

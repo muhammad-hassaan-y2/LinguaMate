@@ -13,6 +13,7 @@ interface Message {
   content: string;
   timestamp?: Date;
   isVoiceMessage?: boolean;
+  id?:number;
 }
 
 export function Chatbot() {
@@ -158,7 +159,8 @@ export function Chatbot() {
       setMessages(prev => [...prev, {
         role: 'system',
         content: "Processing your voice message...",
-        timestamp: new Date()
+        timestamp: new Date(),
+        
       }]);
 
       await generateStreamingResponse(voiceInput, (partialResponse) => {
@@ -190,7 +192,7 @@ export function Chatbot() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!input.trim()) return;
-
+    
     const userMessage = {
       role: 'user' as const,
       content: input,
@@ -204,14 +206,29 @@ export function Chatbot() {
 
     try {
       await generateStreamingResponse(input, (partialResponse) => {
-        setMessages(prev => [
-          ...prev.filter(msg => msg.role !== 'assistant'),
-          {
-            role: 'assistant',
-            content: partialResponse,
-            timestamp: new Date()
+        partialResponse = partialResponse.replaceAll("**", "")
+        setMessages(prev => {
+          if(prev[prev.length -1].role == "assistant"){
+            prev.pop()
+            return [
+              ...prev,
+              {
+                role: 'assistant',
+                content: partialResponse,
+                timestamp: new Date()
+              }
+            ]
+          }else{
+            return [
+              ...prev,
+              {
+                role: 'assistant',
+                content: partialResponse,
+                timestamp: new Date()
+              }
+            ]
           }
-        ]);
+        });
       });
     } catch (error) {
       console.error('Error generating response:', error);

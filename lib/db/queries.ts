@@ -39,7 +39,7 @@ export async function createUser(email: string, password: string) {
   const hash = hashSync(password, salt);
 
   try {
-    return await db.insert(user).values({ email, password: hash });
+    return await db.insert(user).values({ email, password: hash }).returning();
   } catch (error) {
     console.error('Failed to create user in database');
     throw error;
@@ -278,4 +278,16 @@ export async function getSuggestionsByDocumentId({
     );
     throw error;
   }
+}
+export async function updatePassword({email,password}:{email:string, password:string}) {
+  console.log(password);
+  
+    try {
+      return await db.update(user).set({password:password}).where(eq(user.email,email));
+    } catch (error) {
+      console.error(
+        'Failed to get suggestions by document version from database',
+      );
+      throw error;
+    }
 }

@@ -27,3 +27,15 @@ export async function generateTitleFromUserMessage({
 
   return title;
 }
+
+
+export async function createSessionChat(){
+    try {
+      const title = await generateTitleFromUserMessage({message:"new chat title"})
+      const id = generateUUID()
+      return await saveChat({id:id, title:title})
+    } catch (error) {
+      console.log("error"+error);
+      
+    }
+}

@@ -1,6 +1,5 @@
 'use client';
 
-import type { User } from 'next-auth';
 import { useRouter } from 'next/navigation';
 
 import { PlusIcon } from '@/components/icons';
@@ -19,16 +18,21 @@ import {
 } from '@/components/ui/sidebar';
 import { BetterTooltip } from '@/components/ui/tooltip';
 import Link from 'next/link';
+import { useEffect } from 'react';
 
-export function AppSidebar({ user }: { user: User | undefined }) {
+export function NewAppSidebar() {
   const router = useRouter();
-  const { setOpenMobile } = useSidebar();
+  const {open, setOpen, setOpenMobile } = useSidebar();
+
+  useEffect(()=>{
+    setOpen(false);
+  },[])
 
   return (
-    <Sidebar className="group-data-[side=left]:border-r-0 bg-[#F5F7FA]">
+    <Sidebar  className="group-data-[side=left]:border-r-0">
       <SidebarHeader>
         <SidebarMenu>
-          <div className="flex flex-row justify-between items-center">
+          <div className="flex flex-row pt-3 justify-between items-center">
             <Link
               href="/"
               onClick={() => {
@@ -57,21 +61,12 @@ export function AppSidebar({ user }: { user: User | undefined }) {
           </div>
         </SidebarMenu>
       </SidebarHeader>
-      <SidebarContent className='bg-[#F5F7FA]'>
+      <SidebarContent>
         <SidebarGroup className="-mx-2">
-          <SidebarHistory user={user} />
+          {/* <SidebarHistory user={user} /> */}
           
         </SidebarGroup>
       </SidebarContent>
-      <SidebarFooter className="gap-0 -mx-2">
-        {user && (
-          <SidebarGroup>
-            <SidebarGroupContent>
-              <SidebarUserNav user={user} />
-            </SidebarGroupContent>
-          </SidebarGroup>
-        )}
-      </SidebarFooter>
     </Sidebar>
   );
 }

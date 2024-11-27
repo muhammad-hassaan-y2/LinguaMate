@@ -4,6 +4,8 @@ import { Toaster } from 'sonner';
 import { ThemeProvider } from '@/components/theme-provider';
 
 import './globals.css';
+import { SidebarProvider } from '@/components/ui/sidebar';
+import { auth } from './(auth)/auth';
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://chat.vercel.ai'),
@@ -40,6 +42,8 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const session = await auth();
+  console.log(session)
   return (
     <html
       lang="en"
@@ -64,7 +68,9 @@ export default async function RootLayout({
           disableTransitionOnChange
         >
           <Toaster position="top-center" />
+          <SidebarProvider>
           {children}
+          </SidebarProvider>
         </ThemeProvider>
       </body>
     </html>
