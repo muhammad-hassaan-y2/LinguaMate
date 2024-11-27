@@ -7,16 +7,18 @@ import { Mic, Volume2, Send, Loader2, StopCircle, Paperclip, VolumeX } from 'luc
 import { useGeminiAPI } from '@/hooks/useGeminiAPI';
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import { saveMessage } from '@/app/(chat)/actions';
 
 interface Message {
   role: 'user' | 'assistant' | 'system';
   content: string;
-  timestamp?: Date;
+  createdAt?: Date;
   isVoiceMessage?: boolean;
-  id?:number;
+  id?:"";
+  chatId:string;
 }
 
-export function Chatbot() {
+export function Chatbot({activeChat}:{activeChat:any}) {
   const [input, setInput] = useState('');
   const [messages, setMessages] = useState<Message[]>([]);
   const [isThinking, setIsThinking] = useState(false);
@@ -146,8 +148,9 @@ export function Chatbot() {
     const userMessage = {
       role: 'user' as const,
       content: voiceInput,
-      timestamp: new Date(),
-      isVoiceMessage: true
+      createdAt: new Date(),
+      isVoiceMessage: true,
+      chatId:activeChat.id
     };
 
     setMessages(prev => [...prev, userMessage]);
@@ -159,8 +162,8 @@ export function Chatbot() {
       setMessages(prev => [...prev, {
         role: 'system',
         content: "Processing your voice message...",
-        timestamp: new Date(),
-        
+        createdAt: new Date(),
+        chatId:activeChat.id
       }]);
 
       await generateStreamingResponse(voiceInput, (partialResponse) => {
@@ -169,7 +172,8 @@ export function Chatbot() {
           {
             role: 'assistant',
             content: partialResponse,
-            timestamp: new Date()
+            createdAt: new Date(),
+            chatId:activeChat.id
           }
         ]);
       });
@@ -180,7 +184,8 @@ export function Chatbot() {
         {
           role: 'assistant',
           content: 'I apologize, but I encountered an error. Please try again.',
-          timestamp: new Date()
+          createdAt: new Date(),
+          chatId:activeChat.id
         }
       ]);
     } finally {
@@ -192,31 +197,39 @@ export function Chatbot() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!input.trim()) return;
-    
+    const currentMessages = []
     const userMessage = {
       role: 'user' as const,
       content: input,
-      timestamp: new Date(),
-      isVoiceMessage: false
+      createdAt: new Date(),
+      isVoiceMessage: false,
+      chatId:activeChat.id
     };
+    currentMessages.push(userMessage)
+    currentMessages.push({})
 
     setMessages(prev => [...prev, userMessage]);
     setInput('');
     setIsThinking(true);
 
     try {
-      await generateStreamingResponse(input, (partialResponse) => {
+      await generateStreamingResponse(input,async (partialResponse) => {
         partialResponse = partialResponse.replaceAll("**", "")
-        setMessages(prev => {
+        const assistantMessage = {
+          role: 'assistant',
+          content: partialResponse,
+          createdAt: new Date(),
+          chatId:activeChat.id
+        }
+        currentMessages.pop()
+        currentMessages.push(assistantMessage)
+        
+        setMessages((prev:any) => {
           if(prev[prev.length -1].role == "assistant"){
             prev.pop()
             return [
               ...prev,
-              {
-                role: 'assistant',
-                content: partialResponse,
-                timestamp: new Date()
-              }
+              {...assistantMessage}
             ]
           }else{
             return [
@@ -224,12 +237,13 @@ export function Chatbot() {
               {
                 role: 'assistant',
                 content: partialResponse,
-                timestamp: new Date()
+                createdAt: new Date()
               }
             ]
           }
         });
-      });
+      })
+
     } catch (error) {
       console.error('Error generating response:', error);
       setMessages(prev => [
@@ -237,12 +251,23 @@ export function Chatbot() {
         {
           role: 'assistant',
           content: 'I apologize, but I encountered an error. Please try again.',
-          timestamp: new Date()
+          createdAt: new Date(),
+          chatId:activeChat.id
         }
       ]);
     } finally {
+     
+      
       setIsThinking(false);
+      saveMessage({message:currentMessages as any})
+        .then(()=>{
+          console.log("message saved");
+          
+        }).catch((e)=>{
+          console.log(e);
+        })
     }
+
   };
 
   // Auto-scroll to bottom
@@ -308,7 +333,7 @@ export function Chatbot() {
                 </div>
                 <div className="flex items-center justify-between mt-2">
                   <span className="text-xs text-gray-500">
-                    {formatTimestamp(message.timestamp)}
+                    {formatTimestamp(message.createdAt)}
                   </span>
                   <Button
                     onClick={() => isSpeaking ? stopSpeaking() : speak(message.content)}

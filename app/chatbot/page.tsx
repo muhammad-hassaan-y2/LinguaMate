@@ -1,6 +1,6 @@
 'use client'
 
-import { useActionState, useState } from 'react'
+import { useActionState, useEffect, useState } from 'react'
 import { Menu, Grid3X3, Settings } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
@@ -12,23 +12,40 @@ import { Chatbot } from '@/components/chatbot/chatbot'
 import { AppSidebar } from '@/components/app-sidebar'
 import { SidebarProvider, useSidebar } from '@/components/ui/sidebar'
 import { NewAppSidebar } from '@/components/new-sidebar'
-import { useLocalStorage } from 'usehooks-ts'
+import { useLocalStorage, useReadLocalStorage } from 'usehooks-ts'
+import { createSessionChat } from '../(chat)/actions'
 // flow
 // store sessionbased user chat id on localstorage, # i already removed nonnull from userId in chat model 
 // on load, create chat and store id in localstorage
 // use id to create new messages
 
 export default function ChatInterface() {
-  const [activeSection, setActiveSection] = useState('chat')
+  const [activeSection, setActiveSection] = useState("chat")
+  const [activeChat, setActiveChat] = useState({})
   const { state, setOpen } = useSidebar();
-  const [localStorage, setLocalStorage] = useLocalStorage("chats", []);
-  
+  const localStorage = useReadLocalStorage("chats") as any[];
+  const [chats, setLocalStorage] = useLocalStorage("chats", ()=>{
+    if(localStorage) return [...localStorage]
+    return []
+  });
+
+
+  const createNewChat = ()=>{
+    createSessionChat({})
+      .then((data:any)=>{
+        console.log(data);
+        
+        setLocalStorage([...chats, ...data])
+        setActiveChat(data[0])
+      })
+  }
+
   return (
     <div className="flex h-screen w-screen overflow-hidden relative">
       {""}
       {/* sidebar new */}
       <div className=' flex '>
-        <NewAppSidebar />
+        <NewAppSidebar chats={chats}  createNewChat={createNewChat} activeChat={activeChat} />
 
         {/* Sidebar */}
         <div className="w-20 bg-[#F5F7FA] flex flex-col items-center py-4 space-y-8 relative z-10">
@@ -152,7 +169,7 @@ export default function ChatInterface() {
 
         {/* Content */}
         <div className="flex-1 overflow-auto">
-          {activeSection === 'chat' && <Chatbot />}
+          {activeSection === 'chat' && <Chatbot activeChat={activeChat} />}
           {activeSection === 'transcribe' && <TranscribeSection />}
           {activeSection === 'speaking' && <SpeakingSection />}
           {activeSection === 'quizzes' && <QuizzesSection />}

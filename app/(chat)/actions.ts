@@ -4,6 +4,8 @@ import { type CoreUserMessage, generateText } from 'ai';
 import { cookies } from 'next/headers';
 
 import { customModel } from '@/lib/ai';
+import { generateUUID } from '@/lib/utils';
+import { saveChat, saveMessages } from '@/lib/db/queries';
 
 export async function saveModelId(model: string) {
   const cookieStore = await cookies();
@@ -29,11 +31,36 @@ export async function generateTitleFromUserMessage({
 }
 
 
-export async function createSessionChat(){
+export async function createSessionChat({
+  message,
+}: {
+  message?: CoreUserMessage;
+}){
     try {
-      const title = await generateTitleFromUserMessage({message:"new chat title"})
+      const messageDefault:CoreUserMessage = {
+        role:"user",
+        content:"generate a simple name for new chat"
+      }
+      const title = "await generateTitleFromUserMessage({message:message||messageDefault})"
       const id = generateUUID()
       return await saveChat({id:id, title:title})
+    } catch (error) {
+      console.log("error"+error);
+      
+    }
+}
+
+export async function saveMessage({
+  message,
+}: {
+  message?: { id: string; createdAt: Date; chatId: string; role: string; content: unknown; }[];
+}){
+    try {
+      message?.forEach((data)=> {
+        data.id = generateUUID()
+        return data;
+      })
+      return await saveMessages({messages:message!})
     } catch (error) {
       console.log("error"+error);
       

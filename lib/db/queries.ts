@@ -52,7 +52,7 @@ export async function saveChat({
   title,
 }: {
   id: string;
-  userId: string;
+  userId?: string;
   title: string;
 }) {
   try {
@@ -61,7 +61,7 @@ export async function saveChat({
       createdAt: new Date(),
       userId,
       title,
-    });
+    }).returning();
   } catch (error) {
     console.error('Failed to save chat in database');
     throw error;

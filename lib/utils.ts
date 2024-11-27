@@ -36,6 +36,27 @@ export const fetcher = async (url: string) => {
   return res.json();
 };
 
+export const fetcherPost = async (url: string) => {
+  const res = await fetch(url, {
+    method:"POST"
+  });
+
+  if (!res.ok) {
+    const error = new Error(
+      'An error occurred while fetching the data.',
+    ) as ApplicationError;
+
+    error.info = await res.json();
+    error.status = res.status;
+
+    throw error;
+  }
+
+  return res.json();
+};
+
+
+
 export function getLocalStorage(key: string) {
   if (typeof window !== 'undefined') {
     return JSON.parse(localStorage.getItem(key) || '[]');
